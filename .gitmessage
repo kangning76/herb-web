@@ -1,0 +1,24 @@
+# <type>: <subject>
+#
+# <body>
+#
+# <footer>
+#
+# --- Commit Types ---
+# feat:     A new feature
+# fix:      A bug fix
+# docs:     Documentation changes only
+# style:    Code style (formatting, semicolons, etc; no logic change)
+# refactor: Code change that neither fixes a bug nor adds a feature
+# perf:     Performance improvement
+# test:     Adding or updating tests
+# build:    Build system or external dependency changes
+# ci:       CI configuration changes
+# chore:    Other changes that don't modify src or test files
+# revert:   Reverts a previous commit
+#
+# --- Rules ---
+# - Subject line: imperative mood, lowercase, no period, max 50 chars
+# - Body: explain *what* and *why*, wrap at 72 chars
+# - Footer: references (Closes #123) or BREAKING CHANGE notes
+# - Blank line between subject, body, and footer
