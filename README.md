@@ -81,6 +81,7 @@ herb-web/
 │   │   ├── seed_admin.py    # Create admin user
 │   │   └── seed_herbs.py    # Seed sample herbs
 │   ├── alembic/             # DB migrations
+│   ├── tests/               # Pytest test suite
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/
@@ -95,6 +96,33 @@ herb-web/
 ├── docker-compose.yml
 └── SPEC.md                  # Full specification
 ```
+
+## Testing
+
+### Backend Tests
+
+```bash
+cd backend
+
+# Create and activate virtual env (first time)
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Create the test database (first time)
+psql -U postgres -c "CREATE DATABASE herbdb_test"
+
+# Run all tests
+python -m pytest tests/ -v
+
+# Run a specific test file
+python -m pytest tests/test_auth.py -v
+
+# Run a single test
+python -m pytest tests/test_herbs_crud.py::test_create_herb -v
+```
+
+Tests use a separate `herbdb_test` database and savepoint-based transaction rollback for isolation (no data persists between tests).
 
 ## API Documentation
 
