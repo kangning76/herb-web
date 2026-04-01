@@ -3,6 +3,7 @@ import os
 import time
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user
@@ -60,7 +61,11 @@ async def create_herb(
     db: AsyncSession = Depends(get_db),
     _user: User = Depends(get_current_user),
 ):
-    return await herb_service.create_herb(db, data)
+    try:
+        return await herb_service.create_herb(db, data)
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail="Herb with this name already exists")
 
 
 @router.put("/{herb_id}", response_model=HerbResponse)

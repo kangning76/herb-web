@@ -10,7 +10,15 @@
 
 - Frontend build: `cd frontend && npm run build`
 - Backend syntax check: `cd backend && python -m py_compile app/main.py`
+- Backend tests: `cd backend && source .venv/bin/activate && python -m pytest tests/ -v`
 - API docs: http://localhost:8000/docs
+
+## Test Setup
+
+- Virtual env: `backend/.venv/` (activate with `source backend/.venv/bin/activate`)
+- Test database: `herbdb_test` on localhost PostgreSQL
+- Test config: `backend/pyproject.toml` (pytest-asyncio in auto mode, session-scoped event loop)
+- Tests use savepoint-based transaction rollback for isolation
 
 ## Key Conventions
 
