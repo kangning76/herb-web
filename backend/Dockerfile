@@ -12,7 +12,8 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 COPY --from=frontend-build /frontend/dist /frontend/dist
-RUN mkdir -p uploads/herbs
+COPY backend/start.sh .
+RUN chmod +x start.sh && mkdir -p uploads/herbs
 
 EXPOSE 8000
-CMD ["sh", "-c", "python -m app.seed_admin && python -m app.seed_herbs && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["./start.sh"]
