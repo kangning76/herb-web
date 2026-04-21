@@ -14,6 +14,7 @@
 
     <!-- Center nav links -->
     <el-menu-item index="/herbs">药材列表</el-menu-item>
+    <el-menu-item index="/recommendations">智能推荐</el-menu-item>
     <el-menu-item index="/visualization">数据可视化</el-menu-item>
 
     <!-- Spacer -->

@@ -117,6 +117,24 @@
             返回列表
           </el-button>
         </div>
+
+        <!-- Similar Herb Recommendations -->
+        <template v-if="recommendations.length > 0">
+          <div class="rec-section">
+            <h2 class="rec-title">相似药材推荐</h2>
+            <el-row :gutter="16">
+              <el-col
+                v-for="rec in recommendations"
+                :key="rec.herb.id"
+                :xs="12"
+                :sm="8"
+                :md="6"
+              >
+                <HerbRecommendationCard :recommendation="rec" />
+              </el-col>
+            </el-row>
+          </div>
+        </template>
       </template>
 
       <!-- Error State -->
@@ -133,13 +151,15 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, SetUp } from '@element-plus/icons-vue'
-import { getHerb } from '../api/herbs'
+import { getHerb, getHerbRecommendations } from '../api/herbs'
+import HerbRecommendationCard from '../components/HerbRecommendationCard.vue'
 
 const route = useRoute()
 const router = useRouter()
 
 const herb = ref(null)
 const loading = ref(true)
+const recommendations = ref([])
 
 const natureColorMap = {
   '寒': { bg: '#e3f2fd', text: '#1565c0', border: '#90caf9' },
@@ -154,11 +174,22 @@ async function fetchHerb() {
   try {
     const { data } = await getHerb(route.params.id)
     herb.value = data
+    fetchRecommendations()
   } catch (error) {
     console.error('获取药材详情失败:', error)
     herb.value = null
   } finally {
     loading.value = false
+  }
+}
+
+async function fetchRecommendations() {
+  try {
+    const { data } = await getHerbRecommendations(route.params.id, { limit: 4 })
+    recommendations.value = data.items || []
+  } catch (error) {
+    console.error('获取推荐药材失败:', error)
+    recommendations.value = []
   }
 }
 
@@ -293,6 +324,22 @@ onMounted(() => {
 /* Back */
 .back-wrapper {
   margin-top: 24px;
+}
+
+/* Recommendations */
+.rec-section {
+  margin-top: 40px;
+}
+
+.rec-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2e7d32;
+  margin: 0 0 20px;
+}
+
+.rec-section :deep(.el-col) {
+  margin-bottom: 16px;
 }
 
 @media (max-width: 768px) {

@@ -6,8 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.api import auth, herbs, stats
+from app.api import auth, herbs, recommendations, stats
 from app.config import settings
+
+_VERSION_FILE = Path(__file__).parent.parent.parent / "VERSION"
+__version__ = _VERSION_FILE.read_text().strip() if _VERSION_FILE.exists() else "0.0.0"
 
 
 @asynccontextmanager
@@ -16,7 +19,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="TCM Herb Encyclopedia", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="TCM Herb Encyclopedia", version=__version__, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +31,7 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(herbs.router, prefix="/api/v1")
+app.include_router(recommendations.router, prefix="/api/v1")
 app.include_router(stats.router, prefix="/api/v1")
 
 upload_path = Path(settings.UPLOAD_DIR)

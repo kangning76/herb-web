@@ -39,3 +39,11 @@ export function importHerbsCsv(file) {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
+
+export function getHerbRecommendations(id, params = {}) {
+  return client.get(`/herbs/${id}/recommendations`, { params })
+}
+
+export function exploreRecommendations(params = {}) {
+  return client.get('/herbs/recommendations/explore', { params })
+}

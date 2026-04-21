@@ -133,6 +133,7 @@ Once the backend is running, visit `http://localhost:8000/docs` for interactive 
 - **Browse**: Card grid with herb images, properties, and pagination
 - **Search**: Keyword search across name, pinyin, category, and efficacy
 - **Filter**: Filter by category and thermal nature
+- **Smart Recommend**: Similar herb recommendations based on category, nature, flavor, and efficacy (detail page + standalone exploration page)
 - **Visualize**: Pie chart (categories), bar chart (nature), radar chart (flavors)
 - **Admin**: CRUD management, image upload, CSV batch import
 - **Auth**: JWT-based login for admin operations

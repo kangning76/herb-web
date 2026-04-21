@@ -203,7 +203,116 @@ consistent data. Standard categories include:
 
 ---
 
-## 10. Deferred to v2
+## 10. Versioning
+
+The project follows [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
+
+### Single Source of Truth
+
+The root `VERSION` file contains the plain version string (e.g. `0.1.0`).
+All other locations read from or must stay in sync with this file:
+
+| Location                       | How it uses the version                          |
+| ------------------------------ | ------------------------------------------------ |
+| `VERSION`                      | **Source of truth** — plain text, one line        |
+| `backend/app/main.py`          | Reads `VERSION` at import time → FastAPI & `/docs` |
+| `frontend/package.json`        | `"version"` field — update manually on release   |
+
+### Release Workflow
+
+1. Update `VERSION` to the new version string
+2. Update `frontend/package.json` `"version"` to match
+3. Add a section to `CHANGELOG.md` under the new version
+4. Commit: `chore: release v<version>`
+5. Tag: `git tag v<version>`
+
+### Version Bumping Rules
+
+| Change type                        | Bump    | Example            |
+| ---------------------------------- | ------- | ------------------ |
+| Breaking API / DB schema changes   | MAJOR   | 0.x → 1.0.0       |
+| New features, non-breaking         | MINOR   | 0.1.0 → 0.2.0     |
+| Bug fixes, minor improvements      | PATCH   | 0.1.0 → 0.1.1     |
+
+---
+
+## 11. Smart Herb Recommendation (智能推荐)
+
+### 11.1 Overview
+
+A recommendation engine that suggests similar herbs based on four dimensions:
+category, thermal nature, flavor profile, and efficacy keywords. The system
+provides two entry points: an automatic "similar herbs" section on the detail
+page, and a standalone exploration page accessible from the navbar.
+
+### 11.2 Similarity Algorithm
+
+Python-side weighted scoring. For a given target herb (or user-selected
+criteria), compute a 0–100 similarity score against every other herb:
+
+| Dimension          | Weight | Scoring Method                                      |
+| ------------------ | ------ | --------------------------------------------------- |
+| Category (分类)    | 35%    | Exact match → 1.0, else 0.0                        |
+| Efficacy (功效)    | 25%    | Jaccard similarity on keyword set (split on punctuation) |
+| Nature (药性)      | 20%    | Exact match → 1.0, else 0.0                        |
+| Flavor (药味)      | 20%    | Jaccard similarity on flavor arrays                 |
+
+Only herbs with score > 0 are returned. Results sorted by score descending.
+
+### 11.3 Match Reason Tags
+
+Each recommendation includes human-readable labels explaining why it matched:
+
+- `"同分类：补气药"` — same category
+- `"同药性：温"` — same thermal nature
+- `"共同药味：甘、苦"` — shared flavors
+- `"相似功效：补气、升阳"` — overlapping efficacy keywords
+
+### 11.4 API Endpoints
+
+| Method | Path                                    | Auth? | Description                              |
+| ------ | --------------------------------------- | ----- | ---------------------------------------- |
+| GET    | `/herbs/{id}/recommendations`           | No    | Similar herbs for a given herb           |
+| GET    | `/herbs/recommendations/explore`        | No    | Explore herbs by user-selected criteria  |
+
+**Query parameters for `GET /herbs/{id}/recommendations`:**
+- `limit` (int, default 6, max 20)
+
+**Query parameters for `GET /herbs/recommendations/explore`:**
+- `category` (string, optional)
+- `nature` (string, optional)
+- `flavor` (list[string], optional, repeated param)
+- `efficacy_keywords` (string, optional, space-separated)
+- `limit` (int, default 12, max 50)
+
+### 11.5 Response Schema
+
+```json
+{
+  "items": [
+    {
+      "herb": { /* HerbResponse */ },
+      "similarity_score": 85.0,
+      "match_reasons": [
+        { "dimension": "category", "label": "同分类：补气药" },
+        { "dimension": "nature", "label": "同药性：温" }
+      ]
+    }
+  ],
+  "total": 5
+}
+```
+
+### 11.6 Frontend Pages
+
+| Route               | Page             | Description                                          |
+| -------------------- | ---------------- | ---------------------------------------------------- |
+| `/herbs/:id`         | Herb Detail      | "相似药材推荐" section at bottom (4–6 cards)         |
+| `/recommendations`   | Smart Recommend  | Filter panel + result grid with match reason tags    |
+
+---
+
+## 12. Deferred to v2
 
 - Meridians (归经) field
 - English name (name_en) field

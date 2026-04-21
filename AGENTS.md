@@ -32,3 +32,11 @@
 
 - Follow Conventional Commits format (see `.gitmessage` template)
 - Do NOT include "Generated with Devin" or Co-Authored-By Devin lines in commit messages
+
+## Versioning
+
+- **Source of truth**: `VERSION` file in project root (plain text, e.g. `0.1.0`)
+- Backend reads it automatically at startup (`backend/app/main.py`)
+- `frontend/package.json` `"version"` must be updated manually to match
+- Follow [Semantic Versioning](https://semver.org/): MAJOR.MINOR.PATCH
+- On release: update `VERSION`, `package.json`, `CHANGELOG.md`, then commit & tag
